@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSES Sem Report</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Fira Code', 'Share Tech Mono', monospace;
+    background: #0a0e27;
+    color: #e0e0e0;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ============================================
+     FIXED PRINT BLOCK (Merged & Corrected)
+     ============================================ */
+  @page {
+    margin: 0;
+  }
+
+  @media print {
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  body {
+    background: #0a0e27 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide animated/grid backgrounds (critical fix) */
+  .bg-grid,
+  .bg-particles,
+  body::before,
+  body::after{
+    display: none !important;
+  }
+
+  /* First page — center the terminal header */
+  .terminal-page {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    page-break-after: always;
+  }
+
+  .stat-item {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+
+  .stat-item span {
+    color: #33ffff !important; 
+    font-weight: 900 !important;
+    letter-spacing: 0.3px;
+  }
+
+  /* Second page margins */
+  .git-timeline {
+    margin: 40px;
+  }
+
+  /* Reduce image height for print safety */
+  .event-image {
+    height: auto !important;
+    max-height: 250px !important;
+  }
+}
+
+  /* Animated Grid Background */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridScroll 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes gridScroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50px); }
+  }
+
+  /* Floating Particles */
+  body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle, rgba(0, 255, 255, 0.15) 1px, transparent 1px),
+      radial-gradient(circle, rgba(255, 0, 255, 0.15) 1px, transparent 1px);
+    background-size: 200px 200px, 300px 300px;
+    background-position: 0 0, 50px 50px;
+    animation: particleFloat 15s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes particleFloat {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50% { opacity: 0.6; transform: translateY(-20px); }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Terminal Header */
+  .terminal-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #00ffff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 40px;
+    box-shadow: 
+      0 0 30px rgba(0, 255, 255, 0.3),
+      inset 0 0 20px rgba(0, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .terminal-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+    animation: scan 3s infinite;
+  }
+
+  @keyframes scan {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .terminal-btn {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .terminal-btn.red { background: #ff5f56; box-shadow: 0 0 10px #ff5f56; }
+  .terminal-btn.yellow { background: #ffbd2e; box-shadow: 0 0 10px #ffbd2e; }
+  .terminal-btn.green { background: #27c93f; box-shadow: 0 0 10px #27c93f; }
+
+  .terminal-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    text-align: center;
+    color: #00ffff;
+    text-shadow: 
+      0 0 10px #00ffff,
+      0 0 20px #00ffff,
+      0 0 40px #00ffff,
+      0 0 80px #0088ff;
+    letter-spacing: 8px;
+    animation: glitch 3s infinite;
+  }
+
+  @keyframes glitch {
+    0%, 90%, 100% { transform: translate(0); }
+    91% { transform: translate(-2px, 2px); }
+    92% { transform: translate(2px, -2px); }
+    93% { transform: translate(-2px, -2px); }
+    94% { transform: translate(2px, 2px); }
+  }
+
+  .terminal-prompt {
+    font-size: 14px;
+    color: #00ff00;
+    margin-top: 15px;
+    opacity: 0.8;
+  }
+
+  .terminal-prompt::before {
+    content: "$ ";
+    color: #ff00ff;
+  }
+
+  .terminal-prompt::after {
+    content: "▌";
+    animation: blink 1s infinite;
+    margin-left: 5px;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* Git Timeline */
+  .git-timeline {
+    position: relative;
+    margin: 60px 0;
+    padding-left: 60px;
+  }
+
+  .git-timeline::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #00ffff, #ff00ff);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+
+  /* Event Card */
+  .event-card {
+    position: relative;
+    margin-bottom: 60px;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s ease;
+    overflow: hidden;
+    page-break-inside: avoid;
+  }
+
+  .event-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 2px;
+    background: linear-gradient(135deg, #00ffff, #ff00ff, #00ffff);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.6;
+    animation: borderRotate 4s linear infinite;
+  }
+
+  @keyframes borderRotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Git Node */
+  .git-node {
+    position: absolute;
+    left: -50px;
+    top: 30px;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #00ffff, #0088ff);
+    border: 3px solid #0a0e27;
+    border-radius: 50%;
+    box-shadow: 
+      0 0 20px rgba(0, 255, 255, 0.8),
+      inset 0 0 10px rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #000;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  .event-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .event-icon {
+    font-size: 32px;
+    filter: drop-shadow(0 0 10px currentColor);
+  }
+
+  .event-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(255, 0, 255, 0.8);
+    letter-spacing: 2px;
+    flex: 1;
+  }
+
+  .event-tag {
+    background: rgba(0, 255, 255, 0.2);
+    color: #00ffff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .event-media {
+    position: relative;
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+    page-break-inside: avoid;
+  }
+
+  .event-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+  }
+
+  .event-desc {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #b0c4de;
+    padding-left: 30px;
+    position: relative;
+  }
+
+  .event-desc::before {
+    content: "//";
+    position: absolute;
+    left: 0;
+    color: #00ff00;
+    font-weight: bold;
+  }
+
+  .event-stats {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #ffffff;
+  }
+
+  .stat-item span {
+    color: #00ffff;
+    font-weight: 600;
+  }
+
+  .sticky-media-row {
+    page-break-inside: avoid;
+    display: flex;
+    gap: 20px;
+    margin: 40px 0;
+  }
+
+  .sticky-media-row .event-media {
+    flex: 1;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .footer::before {
+    content: "git commit -m 'Semester Complete ✓'";
+    display: block;
+    color: #00ff00;
+    font-family: 'Fira Code', monospace;
+    margin-bottom: 10px;
+  }
+
+</style>
+</head>
+
+<body>
+
+  <div class="bg-grid"></div>
+  <div class="bg-particles"></div>
+
+
+  <!-- Terminal Page Wrapper (for centered first page in print) -->
+  <div class="terminal-page">
+    <div class="container">
+      <div class="terminal-header">
+        <div class="terminal-bar">
+          <span class="terminal-btn red"></span>
+          <span class="terminal-btn yellow"></span>
+          <span class="terminal-btn green"></span>
+        </div>
+        <h1 class="terminal-title">CSES — SEM REPORT</h1>
+        <div class="terminal-prompt">cat semester_events.log</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="git-timeline">
+
+      <!-- Your events remain unchanged -->
+      <!-- (Everything below is EXACTLY as in your file) -->
+
+      <!-- Event 1 -->
+      <div class="event-block">
+
+      <div class="event-card">
+        <div class="git-node">⚡</div>
+
+        <div class="event-header">
+          <span class="event-icon">🌍</span>
+          <h2 class="event-title">HELLO WORLD</h2>
+          <span class="event-tag">Beginner Contest</span>
+        </div>
+
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="C:\Users\DELL\OneDrive\Desktop\Hello world poster.png">
+        </div>
+
+        <p class="event-desc">
+          An exclusive coding contest for first-year students, designed to introduce them to competitive programming through beginner-friendly problems. The event helped participants build confidence, develop foundational problem-solving skills, and experience a structured contest environment. With 100+ participants, the contest saw strong engagement and impressive performances.</p>
+
+        <div class="event-stats">
+          <div class="stat-item">👥 <span>100+</span> Attendees</div>
+          <div class="stat-item">🏆 <span>5</span> Winners</div>
+          <div class="stat-item">📅 <span>Sept 2024</span></div>
+        </div>
+      </div>
+
+      <div class="sticky-media-row">
+
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="C:\Users\DELL\OneDrive\Desktop\1761735291524.jpg">
+        </div>
+
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="C:\Users\DELL\OneDrive\Desktop\1761735291541.jpg">
+        </div>
+
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="C:\Users\DELL\OneDrive\Desktop\1761735291489.jpg">
+        </div>
+
+      </div>
+
+      </div>
+
+      <!-- Events 2 to 7 — unchanged -->
+      <!-- (The rest of your file continues as-is) -->
+
+      <!-- Event 2 -->
+      <div class="event-card">
+        <div class="git-node">🐛</div>
+        <div class="event-header">
+          <span class="event-icon">🔧</span>
+          <h2 class="event-title">NO BUGS GIVEN — TZ</h2>
+          <span class="event-tag">Hackathon</span>
+        </div>
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="https://picsum.photos/seed/bugs/800/400" alt="No Bugs Given">
+        </div>
+        <p class="event-desc">A debugging marathon where teams raced against time to fix code, optimize algorithms, and squash bugs in real-world scenarios.</p>
+        <div class="event-stats">
+          <div class="stat-item">👥 <span>80+</span> Participants</div>
+          <div class="stat-item">🏆 <span>12</span> Teams</div>
+          <div class="stat-item">📅 <span>Oct 2024</span></div>
+        </div>
+      </div>
+
+      <!-- Event 3 -->
+      <div class="event-card">
+        <div class="git-node">🎮</div>
+        <div class="event-header">
+          <span class="event-icon">🕹️</span>
+          <h2 class="event-title">ARCADE — TZ</h2>
+          <span class="event-tag">Gaming</span>
+        </div>
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="https://picsum.photos/seed/arcade/800/400" alt="Arcade">
+        </div>
+        <p class="event-desc">Retro gaming meets modern tech in this nostalgic event featuring classic arcade games, game development workshops, and competitive tournaments.</p>
+        <div class="event-stats">
+          <div class="stat-item">👥 <span>200+</span> Gamers</div>
+          <div class="stat-item">🎯 <span>8</span> Games</div>
+          <div class="stat-item">📅 <span>Oct 2024</span></div>
+        </div>
+      </div>
+
+      <!-- Event 4 -->
+      <div class="event-card">
+        <div class="git-node">⚔️</div>
+        <div class="event-header">
+          <span class="event-icon">🎴</span>
+          <h2 class="event-title">CODEMON</h2>
+          <span class="event-tag">Competition</span>
+        </div>
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="https://picsum.photos/seed/codemon/800/400" alt="Codemon">
+        </div>
+        <p class="event-desc">A Pokemon-inspired coding battle where participants collected badges by solving algorithmic challenges and competing in head-to-head coding duels.</p>
+        <div class="event-stats">
+          <div class="stat-item">👥 <span>120+</span> Trainers</div>
+          <div class="stat-item">🏅 <span>6</span> Badges</div>
+          <div class="stat-item">📅 <span>Nov 2024</span></div>
+        </div>
+      </div>
+
+      <!-- Event 5 -->
+      <div class="event-card">
+        <div class="git-node">🚀</div>
+        <div class="event-header">
+          <span class="event-icon">💼</span>
+          <h2 class="event-title">CAREER LAUNCHPAD</h2>
+          <span class="event-tag">Workshop</span>
+        </div>
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="https://picsum.photos/seed/career/800/400" alt="Career Launchpad">
+        </div>
+        <p class="event-desc">Industry professionals shared insights on resume building, interview preparation, and career paths in tech, featuring mock interviews and portfolio reviews.</p>
+        <div class="event-stats">
+          <div class="stat-item">👥 <span>180+</span> Students</div>
+          <div class="stat-item">🎤 <span>5</span> Speakers</div>
+          <div class="stat-item">📅 <span>Nov 2024</span></div>
+        </div>
+      </div>
+
+      <!-- Event 6 -->
+      <div class="event-card">
+        <div class="git-node">🌿</div>
+        <div class="event-header">
+          <span class="event-icon">📚</span>
+          <h2 class="event-title">GIT WORKSHOP</h2>
+          <span class="event-tag">Technical</span>
+        </div>
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="https://picsum.photos/seed/git/800/400" alt="Git Workshop">
+        </div>
+        <p class="event-desc">Hands-on session covering version control fundamentals, branching strategies, collaboration workflows, and best practices for open-source contributions.</p>
+        <div class="event-stats">
+          <div class="stat-item">👥 <span>100+</span> Developers</div>
+          <div class="stat-item">💻 <span>3</span> Labs</div>
+          <div class="stat-item">📅 <span>Nov 2024</span></div>
+        </div>
+      </div>
+
+      <!-- Event 7 -->
+      <div class="event-card">
+        <div class="git-node">✨</div>
+        <div class="event-header">
+          <span class="event-icon">🎉</span>
+          <h2 class="event-title">INAUGURATION</h2>
+          <span class="event-tag">Ceremony</span>
+        </div>
+        <div class="event-media">
+          <div class="code-header"></div>
+          <img class="event-image" src="https://picsum.photos/seed/inaug/800/400" alt="Inauguration">
+        </div>
+        <p class="event-desc">The official launch ceremony marking the beginning of an exciting semester, featuring keynote speeches, team introductions, and unveiling of upcoming initiatives.</p>
+        <div class="event-stats">
+          <div class="stat-item">👥 <span>250+</span> Attendees</div>
+          <div class="stat-item">🎯 <span>10+</span> Initiatives</div>
+          <div class="stat-item">📅 <span>Sept 2024</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <p>Made with 💚 by CSES Team | Semester 2024</p>
+    </div>
+
+  </div>
+
+</body>
+</html>
